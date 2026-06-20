@@ -90,6 +90,31 @@ getActress(2)
 
 // Può essere anche un array vuoto.
 
+async function getAllActresses(): Promise<Actress[]> {
+    try {
+        const response = await fetch(`http://localhost:3333/actresses`);
+        const data: unknown = await response.json();
+        console.log(data);
+        if (!response.ok) {
+            throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
+        }
+        if (!(data instanceof Array)) {
+            throw new Error("Data is not an Array");
+        }
+        const acceptedActress = data.filter(isActress);
+        return acceptedActress;
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Cannot GET Actresses", error);
+        } else {
+            console.error("Unknown Error", error);
+        }
+        return [];
+    }
+}
+
+getAllActresses();
 
 // 📌 Milestone 5
 // Crea una funzione getActresses che riceve un array di numeri (gli id delle attrici).
