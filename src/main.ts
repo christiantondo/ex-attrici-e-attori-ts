@@ -32,7 +32,7 @@ type Actress = Person & {
     most_famous_movies: [string, string, string],
     awards: string,
     nationality: AcceptedNationality
-}
+};
 
 // 📌 Milestone 3
 // Crea una funzione getActress che, dato un id, effettua una chiamata a:
@@ -42,6 +42,45 @@ type Actress = Person & {
 
 // Utilizza un type guard chiamato isActress per assicurarti che la struttura del dato ricevuto sia corretta.
 
+function isActress(data: unknown): data is Actress {
+    return (
+        typeof data === "object" && data !== null &&
+        "id" in data && typeof data.id === "number" &&
+        "name" in data && typeof data.name === "string" &&
+        "birth_year" in data && typeof data.birth_year === "number" &&
+        "death_year" in data && typeof data.death_year === "number" &&
+        "biography" in data && typeof data.biography === "string" &&
+        "image" in data && typeof data.image === "string" &&
+        "most_famous_movies" in data &&
+        data.most_famous_movies instanceof Array &&
+        data.most_famous_movies.length === 3 &&
+        data.most_famous_movies.every(movie => typeof movie === "string") &&
+        "awards" in data && typeof data.awards === "string" &&
+        "nationality" in data && typeof data.nationality === "string"
+    )
+};
+
+async function getActress(id: number): Promise<Actress | null> {
+    try {
+        const response = await fetch(`http://localhost:3333/actresses/${id}`);
+        const data: unknown = await response.json();
+        console.log(data)
+        if (!isActress(data)) {
+            throw new Error("Data is not valid");
+        }
+        return data;
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Cannot GET Actress", error);
+        } else {
+            console.error("Unknown Error", error);
+        }
+        return null;
+    }
+};
+
+getActress(2)
 
 // 📌 Milestone 4
 // Crea una funzione getAllActresses che chiama:
