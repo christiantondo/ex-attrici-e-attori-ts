@@ -64,7 +64,6 @@ async function getActress(id: number): Promise<Actress | null> {
     try {
         const response = await fetch(`http://localhost:3333/actresses/${id}`);
         const data: unknown = await response.json();
-        console.log(data)
         if (!isActress(data)) {
             throw new Error("Data is not valid");
         }
@@ -80,8 +79,6 @@ async function getActress(id: number): Promise<Actress | null> {
     }
 };
 
-getActress(2)
-
 // 📌 Milestone 4
 // Crea una funzione getAllActresses che chiama:
 
@@ -94,7 +91,6 @@ async function getAllActresses(): Promise<Actress[]> {
     try {
         const response = await fetch(`http://localhost:3333/actresses`);
         const data: unknown = await response.json();
-        console.log(data);
         if (!response.ok) {
             throw new Error(`HTTP Error ${response.status}: ${response.statusText}`)
         }
@@ -114,8 +110,6 @@ async function getAllActresses(): Promise<Actress[]> {
     }
 }
 
-getAllActresses();
-
 // 📌 Milestone 5
 // Crea una funzione getActresses che riceve un array di numeri (gli id delle attrici).
 
@@ -125,6 +119,30 @@ getAllActresses();
 
 // La funzione deve restituire un array contenente elementi di tipo Actress oppure null (se l’attrice non è stata trovata).
 
+async function getActresses(id: number[]): Promise<(Actress | null)[]> {
+    try {
+        const promises = id.map(id => getActress(id));
+        const actresses = await Promise.all(promises);
+        return actresses;
+
+    } catch (error) {
+        if (error instanceof Error) {
+            console.error("Cannot GET Actresses", error);
+        } else {
+            console.error("Unknown Error", error);
+        }
+        return [];
+    }
+}
+
+(async () => {
+    const singleActress = await getActress(2)
+    console.log("Actress", singleActress);
+    const allActresses = await getAllActresses();
+    console.log("Full actresses list:", allActresses);
+    const selectedActresses = await getActresses([4, 5, 6]);
+    console.log("List of selected actresses:", selectedActresses);
+})();
 
 // 🎯 BONUS 1
 // Crea le funzioni:
